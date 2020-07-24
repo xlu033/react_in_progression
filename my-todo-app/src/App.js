@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TodoBanner } from "./TodoBanner";
 import {TodoRow } from "./TodoRow";
 import {TodoCreator} from "./TodoCreator";
+import {VisibilityControl} from "./VisibilityControl";
 
 export default class App extends Component {
     constructor(props) {
@@ -11,9 +12,16 @@ export default class App extends Component {
             todoItems: [{action: "40min Literature reading", done: true},
                 {action: "Morning Workout", done: true},
                 {action: "Reaction Practicing", done: false},
-                {action: "Room Decoration", done: false}],
-
+                {action: "Room Decoration", done: false},
+                {action: "Language Study", done: false}],
+            showCompleted: true
         }
+    }
+
+    changeStateData = () => {
+        this.setState({
+            userName: this.state.userName === "Annie" ? "Zoe" : "Annie"
+        })
     }
 
     updateNewTextValue = (event) => {
@@ -24,85 +32,72 @@ export default class App extends Component {
         if(!this.state.todoItems.find(item => item.action === task)) {
             this.setState({
                 todoItems: [...this.state.todoItems, { action: task, done: false }]
-            });
+            }, () => localStorage.setItem("todos", JSON.stringify(this.state)));
         }
     }
 
 
     toggleTodo = (todo) => this.setState({ todoItems:
-            this.state.todoItems.map(item => item.action === todo.action
+            this.state.todoItems.map( item => item.action === todo.action
                 ? { ...item, done: !item.done } : item) });
 
-    todoTableRows = () => this.state.todoItems.map(item =>
-        <tr key={ item.action }>
-            <td>{ item.action}</td>
-            <td>
-                <input type="checkbox" checked={ item.done }
-                       onChange={ () => this.toggleTodo(item) } />
-            </td>
-        </tr> );
+    todoTableRows = (doneValue) => this.state.todoItems
+        .filter( item => item.done === doneValue).map(item =>
+            <TodoRow key = { item.action } item = { item }
+                     callback = { this.toggleTodo } />);
 
-    changeStateData = () => {
-        this.setState({
-            userName: this.state.userName === "Annie" ? "Zoe" : "Annie"
-        })
+    componentDidMount = () => {
+        let data = localStorage.getItem("todos");
+        this.setState(data != null
+            ? JSON.parse(data)
+            : {
+                userName: "Annie",
+                todoItems: [{action: "40min Literature reading", done: true},
+                    {action: "Morning Workout", done: true},
+                    {action: "Reaction Practicing", done: false},
+                    {action: "Room Decoration", done: false},
+                    {action: "Language Study", done: false}],
+                showCompleted: true
+            });
     }
 
     render = () =>
-            <div>
-                <h4 className="bg-primary text-white text-center p-2" style={{height: '60px', marginBottom: '20px'}}>
-                    {this.state.userName}'s TO DO LIST
-                    ({ this.state.todoItems.filter(t => !t.done).length} items to do)
-                </h4>
+        <div>
+            <TodoBanner name = { this.state.userName } tasks = {this.state.todoItems }/>
+            <div className="container-fluid">
+                <TodoCreator callback = { this.creatNewTodo } />
 
+                <table className="table table-striped table-bordered">
+                    <thead>
+                        <tr><th> My Tasks </th><th> Status </th></tr>
+                    </thead>
+                    <tbody>{ this.todoTableRows(false) }</tbody>
+                </table>
 
-                <div className="container-fluid">
-                    <div className="my-1">
-                        <input className="form-control"
-                               value={ this.state.newItemText }
-                               style={{marginBottom: '12px'}}
-                               onChange={ this.updateNewTextValue } />
-                        <button className="btn btn-primary mt-1" style={{marginBottom: '20px'}}
-                                onClick={ this.createNewTodo }> Add Task </button>
-                    </div>
+                <div className="bg-secondary text-white text-center p-2">
+                    <VisibilityControl description = "Completed Tasks "
+                                       isChecked = {this.state.showCompleted}
+                                       callback = { (checked) =>
+                                       this.setState({ showCompleted : checked})}/>
+                </div>
+
+                { this.state.showCompleted &&
                     <table className="table table-striped table-bordered">
                         <thead>
-                        <tr><th>Description</th><th>Done</th></tr>
+                            <tr><th>Description</th><th>Done</th></tr>
                         </thead>
-                        <tbody>{ this.todoTableRows() }</tbody>
+                        <tbody>{ this.todoTableRows(true) }</tbody>
                     </table>
-                </div>
+                }
+
+            </div>
 
                 <button className="btn btn-primary float-right m-2" style={{marginTop: '50px'}}
                         onClick={ this.changeStateData }>
                     Log out
                 </button>
 
-            </div>
+        </div>
 
 }
 
-/*
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
-*/
