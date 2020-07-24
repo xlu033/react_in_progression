@@ -20,7 +20,7 @@ export class TodoCreator extends Component {
             <input className="form-control" value={ this.state.newItemText }
                    onChange={ this.updateNewTextValue } />
             <button className="btn btn-primary mt-1"
-                    onClick={ this.createNewTodo }>Add</button>
+                    onClick={ this.createNewTodo }> Add New Task </button>
         </div>
 
 }
