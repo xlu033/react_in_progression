@@ -17,7 +17,8 @@ export class TodoCreator extends Component {
 
     render = () =>
         <div className="my-1">
-            <input className="form-control" value={ this.state.newItemText }
+            <input className="form-control" placeholder="add a new task"
+                   value={ this.state.newItemText }
                    onChange={ this.updateNewTextValue } />
             <button className="btn btn-primary mt-1"
                     onClick={ this.createNewTodo }> Add New Task </button>

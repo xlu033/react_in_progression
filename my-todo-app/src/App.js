@@ -23,7 +23,16 @@ export default class App extends Component {
             userName: this.state.userName === "Annie" ? "Zoe" : "Annie"
         })
     }
+/*
+    deleteStateData = (task) => {
+        if(!this.state.todoItems.find(item => item.action === task)) {
+            this.setState({
+                todoItems: [...this.state.todoItems, { action: task, done: false }]
+            });
+        }
+    }
 
+ */
     updateNewTextValue = (event) => {
         this.setState({newItemText: event.target.value });
     }
@@ -64,12 +73,17 @@ export default class App extends Component {
     render = () =>
         <div>
             <TodoBanner name = { this.state.userName } tasks = {this.state.todoItems }/>
-            <div className="container-fluid">
+
+            <h4 className="bg-light text-info text-center p-2 m-1">
+                TAKE A DEEP BREATH AND BEGIN YOUR DAY
+            </h4>
+
+            <div className="container-fluid" >
                 <TodoCreator callback = { this.creatNewTodo } />
 
-                <table className="table table-striped table-bordered">
+                <table className="table table-striped table-bordered" style={{marginTop: '30px'}}>
                     <thead>
-                        <tr><th> My Tasks </th><th> Status </th></tr>
+                        <tr><th> My Tasks </th><th> Status </th><th> Delete </th></tr>
                     </thead>
                     <tbody>{ this.todoTableRows(false) }</tbody>
                 </table>
@@ -92,10 +106,12 @@ export default class App extends Component {
 
             </div>
 
-                <button className="btn btn-primary float-right m-2" style={{marginTop: '50px'}}
-                        onClick={ this.changeStateData }>
-                    Log out
-                </button>
+            <button className="btn btn-primary float-right m-2" style={{marginTop: '50px'}}
+                    onClick={ this.changeStateData }>
+                Log out
+            </button>
+
+
 
         </div>
 
